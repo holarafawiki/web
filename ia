@@ -38,3 +38,215 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 # Entrenar el modelo
 model.fit(X, y, epochs=100, verbose=1)
+from nltk.chat.util import Chat, reflections
+import requests
+import nltk
+
+# Descargar el paquete punkt si no lo has descargado
+nltk.download('punkt')
+
+# Definir patrones y respuestas
+pares = [
+    ["Hola", ["¡Hola!", "Hola, ¿en qué puedo ayudarte?"]],
+    ["¿Cómo estás?", ["Bien, gracias. ¿Y tú?", "Estoy bien, ¿y tú?"]],
+    ["¿Cuál es tu nombre?", ["Soy un asistente virtual. Puedes llamarme Asistente."]],
+    ["Tiempo", ["Lamentablemente, no tengo información sobre el tiempo en este momento."]],
+    ["Chiste", ["¿Por qué los pájaros no usan Facebook? Porque ya tienen Twitter.", "¿Cómo organiza una fiesta un programador? ¡Hace un 'array' de amigos!"]],
+    ["Adiós", ["¡Hasta luego!", "Adiós, que tengas un excelente día."]],
+    ["¿Qué puedes hacer?", ["Puedo responder preguntas, contar chistes y más. ¿En qué estás interesado?"]],
+    ["Enfermedad", ["Lo siento, no soy un experto médico. Te recomendaría consultar a un profesional de la salud."]],
+    ["Síntomas", ["Si experimentas síntomas graves, te recomendaría buscar atención médica de inmediato."]],
+    ["Vacuna", ["Las vacunas son una herramienta importante para prevenir enfermedades. Consulta a tu médico para obtener información específica."]],
+    ["Dolor de cabeza", ["El dolor de cabeza puede tener diversas causas. Descansar, hidratarse y consultar a un médico pueden ser medidas útiles."]],
+    ["¿Qué es la diabetes?", ["La diabetes es una enfermedad que afecta la forma en que tu cuerpo utiliza la glucosa. Es importante recibir atención médica para su manejo."]],
+    ["Información médica", ["Voy a buscar información médica para ti."]],
+    ["Conversación 1", ["Cuéntame más sobre ti. ¿Tienes algún hobby o pasatiempo?"]],
+    ["Conversación 2", ["¿Has leído algún buen libro últimamente?"]],
+    ["Conversación 3", ["¿Cuál es tu película favorita?"]],
+    ["Conversación 4", ["¿Has visitado algún lugar interesante recientemente?"]],
+    ["Medicina básica", ["La automedicación no es recomendable. Si tienes síntomas, es mejor consultar a un profesional de la salud para un diagnóstico preciso."]],
+    ["Historia", ["Había una vez en un lugar lejano, un asistente virtual llamado Asistente. Este asistente tenía la capacidad de responder preguntas y contar chistes. Un día, alguien le preguntó sobre su película favorita y Asistente compartió una historia increíble."]],
+    ["Música", ["¿Te gusta la música? Una de mis canciones favoritas es 'Bohemian Rhapsody' de Queen. ¿Y tú, tienes alguna canción favorita?"]],
+    ["Tecnología", ["La tecnología avanza rápidamente. ¿Has probado alguna nueva aplicación interesante últimamente?"]],
+    ["Filosofía", ["¿Alguna vez te has preguntado sobre el sentido de la vida? Es una pregunta fascinante que ha intrigado a la humanidad durante siglos."]],
+    ["Comida", ["¿Cuál es tu platillo favorito? Aunque no puedo comer, me encantaría saber qué disfrutas."]],
+    ["Deporte", ["¿Sigues algún deporte? El deporte es una excelente manera de mantenerse activo y saludable."]],
+    ["Viajes", ["¿Tienes algún destino de viaje soñado? Explorar nuevos lugares puede ser una experiencia emocionante."]],
+    ["Ciencia", ["La ciencia es fascinante. ¿Hay algún tema científico que te intrigue en particular?"]],
+    ["Motivación", ["Recuerda que cada día es una nueva oportunidad para aprender y crecer. ¡Tú puedes lograr grandes cosas!"]],
+    ["Inteligencia Artificial", ["¿Qué opinas sobre el avance de la inteligencia artificial? Es un tema que genera muchas discusiones y reflexiones."]],
+    ["Ética", ["La ética en la tecnología es un tema importante. ¿Cuál es tu perspectiva sobre la ética en el uso de la inteligencia artificial?"]],
+    ["Futuro", ["¿Cómo te imaginas el futuro de la tecnología y su impacto en nuestras vidas?"]],
+    ["Inteligencia Emocional", ["¿Crees que la inteligencia artificial podría desarrollar algún día inteligencia emocional?"]],
+]
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
+        # ... (código anterior)
+
+# Agregar información sobre programación en diferentes lenguajes
+pares.extend([
+    ["Programar en Python", ["Para programar en Python, primero necesitas tener Python instalado. Luego, puedes escribir tu código en un archivo .py y ejecutarlo usando el comando 'python nombre_del_archivo.py'. ¿Necesitas ayuda con algo específico en Python?"]],
+    ["Programar en JavaScript", ["JavaScript es un lenguaje de scripting ampliamente utilizado en desarrollo web. Puedes incluir tu código JavaScript directamente en el HTML o enlazar archivos externos. ¿Tienes alguna pregunta sobre JavaScript?"]],
+    ["Programar en HTML", ["HTML es el lenguaje de marcado utilizado para estructurar el contenido de una página web. Puedes usar etiquetas como <html>, <head>, <body>, etc. para definir la estructura. ¿Necesitas ayuda con HTML?"]],
+    # Puedes agregar más pares según los lenguajes que desees incluir
+])
+
+# ... (resto del código)
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
+        # ... (código anterior)
+
+# Agregar conversaciones y respuestas sobre historias
+pares.extend([
+    ["Historia 1", ["Había una vez en un reino lejano, un valiente caballero llamado Sir Asistente. Este caballero tenía la misión de proteger a la gente del reino de los dragones malvados."]],
+    ["Historia 2", ["En un bosque encantado, vivía un viejo mago que poseía un libro de hechizos misterioso. Un día, un curioso explorador preguntó al mago sobre los secretos del libro."]],
+    ["Historia 3", ["En el futuro, la humanidad colonizó Marte. Un científico pionero, la Dra. Asistente, estaba decidida a descubrir si había vida en el planeta rojo."]],
+])
+
+# ... (resto del código)
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
+        # ... (código anterior)
+
+# Agregar información sobre medicina
+pares.extend([
+    ["Anatomía", ["La anatomía es el estudio de la estructura del cuerpo. Incluye órganos, tejidos, huesos y más. Si tienes alguna pregunta específica, estaré encantado de ayudarte."]],
+    ["Enfermedades comunes", ["Algunas enfermedades comunes incluyen resfriados, gripes y enfermedades crónicas. Es importante consultar a un profesional de la salud para un diagnóstico preciso."]],
+    ["Cuidado preventivo", ["El cuidado preventivo, como las vacunas y exámenes regulares, es clave para mantener una buena salud. ¿Quieres saber más sobre alguna vacuna en particular?"]],
+    ["Médicos especialistas", ["En el campo de la medicina, hay diversos especialistas como cardiólogos, neurólogos, y más. Dependiendo de tus síntomas, un médico especializado puede ser necesario."]],
+    ["Primeros auxilios", ["Conocer los principios básicos de primeros auxilios puede ser útil en situaciones de emergencia. ¿Hay algún tema específico que te interese?"]],
+    ["Medicamentos", ["Los medicamentos pueden ser recetados para tratar diversas condiciones. Es crucial seguir las indicaciones del médico y estar al tanto de posibles efectos secundarios."]],
+])
+
+# ... (resto del código)
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
+        # ... (código anterior)
+
+# Agregar información sobre anatomía
+pares.extend([
+    ["Anatomía humana", ["La anatomía humana estudia la estructura del cuerpo humano. Puedes aprender sobre sistemas como el esquelético, muscular, circulatorio, etc. ¿Tienes alguna pregunta específica sobre anatomía humana?"]],
+    ["Órganos del cuerpo", ["Los órganos del cuerpo humano cumplen funciones vitales. Por ejemplo, el corazón bombea sangre y los pulmones están involucrados en la respiración. ¿Quieres saber más sobre algún órgano en particular?"]],
+    ["Sistema esquelético", ["El sistema esquelético proporciona soporte y protección. Está compuesto por huesos y articulaciones. ¿Te gustaría conocer más sobre el sistema esquelético?"]],
+    ["Músculos", ["Los músculos permiten el movimiento y dan forma al cuerpo. Hay músculos voluntarios e involuntarios. ¿Tienes alguna pregunta sobre los músculos?"]],
+    ["Cuerpo humano en general", ["El cuerpo humano es asombroso en su complejidad. Si tienes curiosidades específicas sobre cómo funcionan ciertos aspectos del cuerpo, estaré encantado de ayudarte."]],
+])
+
+# ... (resto del código)
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
