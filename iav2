@@ -1,0 +1,196 @@
+							!pip install flask
+import nltk
+import tensorflow
+from nltk.chat.util import Chat, reflections
+import requests
+import spacy
+!pip install spacy
+import spacy
+!pip install tensorflow scikit-learn
+!pip install https://github.com/hexthedev/OpenAi-Api-Unity.git
+!pip install pandas
+!pip install numpy
+!pip install scikit-learn
+
+
+def search_google(query):
+  """Busca resultados en Google para la consulta especificada.
+
+  Args:
+    query: La consulta a buscar.
+
+  Returns:
+    Una lista de resultados de búsqueda.
+  """
+
+  url = "https://www.googleapis.com/customsearch/v1?q={}".format(query)
+  response = requests.get(url)
+  if response.status_code == 200:
+    return response.json()["items"]
+  else:
+    return []
+
+
+if __name__ == "__main__":
+  query = "cómo hacer una tortilla"
+  results = search_google(query)
+  for result in results:
+    print(result["title"])
+
+
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Supongamos que tienes datos en la forma de pares (texto, etiqueta)
+datos = [("Este es un ejemplo de texto.", "clase1"),
+         ("Otro texto para clasificar.", "clase2"),
+         # Agrega más datos según tu conjunto de entrenamiento
+        ]
+
+# Separar texto y etiquetas
+textos, etiquetas = zip(*datos)
+
+# Convertir etiquetas a valores numéricos
+label_encoder = LabelEncoder()
+etiquetas_codificadas = label_encoder.fit_transform(etiquetas)
+
+# Dividir datos en conjunto de entrenamiento y prueba
+textos_entrenamiento, textos_prueba, y_train, y_test = train_test_split(textos, etiquetas_codificadas, test_size=0.2, random_state=42)
+
+# Tokenizar y secuenciar texto
+tokenizer = Tokenizer()
+tokenizer.fit_on_texts(textos_entrenamiento)
+
+vocab_size = len(tokenizer.word_index) + 1
+
+X_train = tokenizer.texts_to_sequences(textos_entrenamiento)
+X_test = tokenizer.texts_to_sequences(textos_prueba)
+
+max_len = max(map(len, X_train + X_test))
+
+X_train_padded = pad_sequences(X_train, maxlen=max_len, padding='post')
+X_test_padded = pad_sequences(X_test, maxlen=max_len, padding='post')
+
+# Definir el modelo
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=16, input_length=max_len),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(len(set(etiquetas)), activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Entrenar el modelo
+model.fit(X_train_padded, y_train, epochs=100, validation_data=(X_test_padded, y_test))
+# Cargar el modelo de idioma
+nlp = spacy.load("en_core_web_sm")
+
+# Procesar un texto
+texto = "spaCy es una biblioteca de procesamiento de lenguaje natural en Python."
+doc = nlp(texto)
+
+# Acceder a tokens y entidades
+for token in doc:
+    print(f"Token: {token.text}, POS: {token.pos_}, Entidad: {token.ent_type_}")
+
+# Realizar análisis sintáctico
+for chunk in doc.noun_chunks:
+    print(f"Fragmento nominal: {chunk.text}")
+# Descargar el paquete punkt si no lo has descargado
+nltk.download('punkt')
+
+# Definir patrones y respuestas
+pares = [
+    ["Hola", ["¡Hola!", "Hola, ¿en qué puedo ayudarte? estamos en la primera version ayudanos a mejorar"]],
+    ["¿Cómo estás?", ["Bien, gracias. ¿Y tú?", "Estoy bien, ¿y tú?"]],
+    ["¿Cuál es tu nombre?", ["Soy un asistente virtual. Puedes llamarme Asistente."]],
+    ["Tiempo", ["Lo siento, no tengo información sobre el tiempo en este momento."]],
+    ["Chiste", ["¿Por qué los pájaros no usan Facebook? Porque ya tienen Twitter.", "¿Cómo organiza una fiesta un programador? ¡Hace un 'array' de amigos!"]],
+    ["Adiós", ["¡Hasta luego!", "Adiós, que tengas un buen día."]],
+    ["¿Qué puedes hacer?", ["Puedo responder preguntas, contar chistes y más. ¿En qué estás interesado?"]],
+    ["Enfermedad", ["Lo siento, no soy un experto médico. Te recomendaría consultar a un profesional de la salud."]],
+    ["Síntomas", ["Si estás experimentando síntomas graves, te recomendaría buscar atención médica de inmediato."]],
+    ["Vacuna", ["Las vacunas son una herramienta importante para prevenir enfermedades. Consulta a tu médico para obtener información específica."]],
+    ["Dolor de cabeza", ["El dolor de cabeza puede tener diversas causas. Descansar, hidratarse y consultar a un médico pueden ser medidas útiles."]],
+    ["¿Qué es la diabetes?", ["La diabetes es una enfermedad que afecta la forma en que tu cuerpo utiliza la glucosa. Es importante recibir atención médica para su manejo."]],
+    ["Información médica", ["Voy a buscar información médica para ti."]],
+    ["Conversación 1", ["Cuéntame más sobre ti. ¿Tienes algún hobby o pasatiempo?"]],
+    ["Conversación 2", ["¿Has leído algún buen libro últimamente?"]],
+    ["Conversación 3", ["¿Cuál es tu película favorita?"]],
+    ["Conversación 4", ["¿Has visitado algún lugar interesante recientemente?"]],
+    ["Medicina básica", ["La automedicación no es recomendable. Si tienes síntomas, es mejor consultar a un profesional de la salud para un diagnóstico preciso."]],
+    ["¿Cuál es tu color favorito?", ["Mi color favorito es el azul. Es un color tranquilo y relajante."]],
+    ["¿Qué te gusta hacer en tu tiempo libre?", ["Me gusta leer, escribir y programar. También me gusta salir a caminar y explorar nuevos lugares."]],
+    ["¿Cuál es tu película favorita?", ["Mi película favorita es 'El Señor de los Anillos: La Comunidad del Anillo'. Es una película épica con una gran historia y personajes."]],
+    ["¿Cuál es tu animal favorito?", ["Mi animal favorito es el perro. Los perros son animales leales y cariñosos."]],
+    ["¿Cuál es tu comida favorita?", ["Mi comida favorita es la pizza. Es una comida deliciosa y satisfactoria."]],
+    ["¿Cuál es tu deporte favorito?", ["Mi deporte favorito es el fútbol. Es un deporte emocionante y lleno de acción."]],
+    ["¿Cuál es tu cantante favorito?", ["Mi cantante favorita es Taylor Swift. Es una cantante talentosa con una gran voz."]],
+    ["¿Cuál es tu actor favorito?", ["Mi actor favorito es Chris Pratt. Es un actor divertido y carismático."]],
+    ["¿Cuál es tu libro favorito?", ["Mi libro favorito es 'La historia interminable'. Es una novela épica con una gran historia y personajes."]],
+    ["¿Cuál es tu lugar favorito para visitar?", ["Mi lugar favorito para visitar es el Parque Nacional de Yosemite. Es un lugar hermoso con impresionantes paisajes naturales."]],
+    ["hola", ["hola bien venido a la primera version", "Hola, bien venido a la primera version"]],
+    ["ayudame", ["en que puedo ayudarte", "estamos en fase beta no puedo hacer muchas cosas"]],
+    ["Dame consejo con las mujeres", ["Aqui te dejo algun consejo", "se original , se gracioso sin llegar a ser un payaso"]],
+    ["¿Que edad tienes?", ["Soy un asistente virtual. mi edad no estq definida."]],
+    ["¿Cuál es tu genero?", ["Soy un asistente virtual. por lo cual no tengo genero."]],
+    ["¿cual es el rio mas largo del mundo?", ["El amazonas"]],
+    ["¿Que cantidad de huesos hay en el cuerpo humano?", ["En adultos 206, en recien nacidos 300 huesos"]],
+    ["¿cual es el disco mas vendido de la historia?", ["thriller de michael jackson"]],
+    ["¿que producto se cultiva mas en guatemala?", ["el café"]],
+    ["¿En que año inicio la segunda guerra mundial?", ["Inicio en 1939"]],
+    ["¿En que lugar del cuerpo se produce la insulina?", ["En el pancreas"]],
+    ["¿Con que se fabrica el pergamino?", ["La piel de animales"]],
+    ["¿Cuantas patas tiene una araña?", ["Tiene 8"]],
+    ["¿Como se llama el himno nacional de francia?", ["La marsellesa"]],
+
+    ]
+
+
+# Crear el objeto Chat
+chat = Chat(pares, reflections)
+
+# Iniciar la conversación
+print("¡Hola! Soy La IA creada por Rafael ignacio. Puedes comenzar a preguntarme.")
+while True:
+    user_input = input("Tú: ")
+    if user_input.lower() == 'salir':
+        print("¡Hasta luego!")
+        break
+    elif 'medicina' in user_input.lower() or 'enfermedad' in user_input.lower():
+        print("Asistente: Voy a buscar información médica para ti.")
+        # Ejemplo de solicitud a la API de Healthcare.gov
+        api_url = "https://www.healthcare.gov/api/index.json"
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            # Procesa la información de la API según tus necesidades
+            print("Asistente: Aquí tienes información médica: ", data)
+        else:
+            print("Asistente: Lo siento, no pude obtener información en este momento.")
+    else:
+        response = chat.respond(user_input)
+        print("Asistente:", response)
+        import random
+
+respuestas = ["¡Hola!", "¿Cómo estás?", "¡Qué interesante!", "Eso suena genial.", "No estoy seguro/a."]
+
+respuesta_aleatoria = random.choice(respuestas)
+print(respuesta_aleatoria)
+import random
+
+respuestas = ["¡Hola!", "¿Cómo estás?", "¡Qué interesante!", "Eso suena genial.", "No estoy seguro/a."]
+
+while True:
+    mensaje_usuario = input("Usuario: ")
+    
+    if mensaje_usuario.lower() == 'salir':
+        print("Adiós, ¡hasta luego!")
+        break
+
+    respuesta_aleatoria = random.choice(respuestas)
+    print(f"Asistente: {respuesta_aleatoria}")
